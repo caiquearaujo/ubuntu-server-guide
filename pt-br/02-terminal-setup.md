@@ -39,7 +39,7 @@ O **ZSH** é um interpretador de comando para *shell scripting* cuja finalidade 
 3. Instale o tema **PowerLevel10K** para o ZSH:
 
     ```bash
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
     ```
 
 4. Edite o arquivo de configuração do ZSH `nano .zshrc` e edite a seguinte variável:
@@ -48,7 +48,16 @@ O **ZSH** é um interpretador de comando para *shell scripting* cuja finalidade 
     ZSH_THEME="powerlevel10k/powerlevel10k"
     ```
 
-5. Execute o assistente de configuração `p10k configure` para configurar o tema e, depois, edite o arquivo de configuração do tema `nano .p10k.zsh` com as seguintes variáveis:
+5. Reinicie o ZSH, será aberto um assistente de configuração do PowerLevel10K, configure-o à gosto:
+
+    ```bash
+    exec zsh
+    
+    # Se o assistente do PowerLevel10K não executar, execute:
+    p10k configure
+    ```
+
+6. Depois, edite o arquivo de configuração do tema `nano .p10k.zsh` com as seguintes variáveis:
 
     ```bash
     # Cor do primeiro plano
@@ -58,8 +67,6 @@ O **ZSH** é um interpretador de comando para *shell scripting* cuja finalidade 
     typeset -g POWERLEVEL9K_CONTEXT_ROOT_TEMPLATE="%F{015}%n%f%F{161}@%m%f"
     # Template para o usuário padrão: user@hostname.
     typeset -g POWERLEVEL9K_CONTEXT_TEMPLATE="%F{015}%n%f%F{161}@%m%f"
-    # Não exibe o contexto a menos que esteja no usuário root ou sudo
-    typeset -g POWERLEVEL9K_CONTEXT_{DEFAULT,SUDO}_CONTENT_EXPANSION=
     
     # Altere a cor da hora
     typeset -g POWERLEVEL9K_TIME_FOREGROUND=200
@@ -119,7 +126,7 @@ O ZSH conta com diversos plugins para gerenciar melhor o terminal, alguns deles 
 	git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
 	```
 
-2. Habilite o plugin no arquivo de inicialização do ZSH `nano ~/.bashrc`:
+2. Habilite o plugin no arquivo de inicialização do ZSH `nano ~/.zshrc`:
 
 	```bash
 	plugins=(git colored-man-pages zsh-syntax-highlighting zsh-autosuggestions)
@@ -133,3 +140,51 @@ O ZSH conta com diversos plugins para gerenciar melhor o terminal, alguns deles 
 
 Depois de configurar todos os plugins, execute `source $HOME/.zshrc` para recarregar o ZSH e aplicar as mudanças sem reiniciar o terminal.
 
+## Mensagem de boas-vindas
+
+Personalize as mensagens de boas-vindas ao abrir o terminal para exibir as configurações e o status do sistema.
+
+1. Instale os aplicativos para exibir dados do sistema:
+
+   ```bash
+   sudo apt-get install screenfetch inxi
+   ```
+
+2. Acesse a pasta do MOTD *(message of the day)* do Ubuntu:
+
+3. Altere o cabeçalho, editando o arquivo `nano 00-header` com o seguinte conteúdo na última linha:
+
+   ```bash
+   printf "Bem-vindo %s, ao %s com a distribuição %s\n" "$(logname)" "Nome do Servidor" "$DISTRIB_DESCRIPTION"
+   ```
+
+4. Desabilite scripts desnecessários:
+
+   ```bash
+   sudo chmod -x 10-help-text 50-motd-news
+   ```
+
+5. Crie uma instrução do sistema logo após o cabeçalho com `nano 01-system` e o seguinte conteúdo:
+
+   ```bash
+   #!/bin/sh
+   echo
+   /usr/bin/screenfetch
+   echo
+   export TERM=xterm; inxi -D
+   echo
+   ```
+
+6. Dê as devidas permissões ao arquivo:
+
+   ```bash
+   sudo chmod +x 01-system
+   ```
+
+7. Execute para teste:
+
+   ```bash
+   sudo ./01-system
+   ```
+
+8. Saia e entre novamente no terminal para certificar que foi atualizado.
